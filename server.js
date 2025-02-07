@@ -2,6 +2,7 @@
 require("dotenv").config(); //? https://github.com/motdotla/dotenv
 const express = require("express");
 const mongoose = require("mongoose");
+const morgan = require('morgan');
 
 //* config
 const log = require('debug')('fruits:server')
@@ -16,16 +17,32 @@ mongoose.connection.on("connected", () => { //? log connection status to termina
 const Fruit = require('./models/Fruit');
 
 //* middleware
+app.use(morgan('dev'));
+//* following line is for EJS only -> interpret the body of the POST
+app.use(express.urlencoded({ extended: false }));
+
 
 //* routes
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   // res.send("Hello World!");
   res.render("index.ejs");
 });
 
-app.get("/fruits/new", (req, res) => {
-    res.send("new fruits");
+app.get('/fruits/new', (req, res) => {
+    // res.send("new fruits");
+    res.render("fruits/new.ejs");
   });
+
+app.post('/fruits', async (req, res) => {
+    if (req.body.isReadyToEat === "on") {
+        req.body.isReadyToEat = true;
+      } else {
+        req.body.isReadyToEat = false;
+      }
+      log("body %o", req.body)
+    await Fruit.create(req.body);
+    res.redirect('fruits/new');
+})
 
 //* listen
 app.listen(port, () => {
