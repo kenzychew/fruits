@@ -1,0 +1,22 @@
+meta {
+  name: All Fruits
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/fruits
+  body: formUrlEncoded
+  auth: none
+}
+
+body:json {
+  { "name": "test",
+    "isReadyToEat": false
+  }
+}
+
+body:form-urlencoded {
+  name: durian
+  isReadyToEat: on
+}
