@@ -1,17 +1,33 @@
-// Here is where we import modules
-// We begin by loading Express
-const express = require('express');
+//* imports -> require
+require("dotenv").config(); //? https://github.com/motdotla/dotenv
+const express = require("express");
+const mongoose = require("mongoose");
 
+//* config
+const log = require('debug')('fruits:server')
 const app = express();
-
-// server.js
-
-// GET /
-app.get("/", async (req, res) => {
-    res.render('index.ejs');
+const port = 3000;
+mongoose.connect(process.env.MONGODB_URI);
+mongoose.set("debug", true);
+mongoose.connection.on("connected", () => { //? log connection status to terminal on start
+    log(`Connected to MongoDB ${mongoose.connection.name}.`);
   });
-  
 
-app.listen(3000, () => {
-  console.log('Listening on port 3000');
+const Fruit = require('./models/Fruit');
+
+//* middleware
+
+//* routes
+app.get("/", (req, res) => {
+  // res.send("Hello World!");
+  res.render("index.ejs");
+});
+
+app.get("/fruits/new", (req, res) => {
+    res.send("new fruits");
+  });
+
+//* listen
+app.listen(port, () => {
+  log(`Example app listening on port ${port}`);
 });
