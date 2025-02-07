@@ -47,6 +47,8 @@ const update = async (req, res) => {
   res.send(fruit);
 };
 
+//? Cut and paste from 'async' to '}' in server.js functions
+//? Remember to export below, then call the functions in server.js
 module.exports = {
   create,
   index,
