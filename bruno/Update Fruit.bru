@@ -1,13 +1,17 @@
 meta {
-  name: All Fruits
+  name: Update Fruit
   type: http
-  seq: 2
+  seq: 4
 }
 
-post {
-  url: http://localhost:3000/fruits
+put {
+  url: http://localhost:3000/fruits/:fruitId
   body: formUrlEncoded
   auth: none
+}
+
+params:path {
+  fruitId: 67a57c5de8b5230cedd175d9
 }
 
 body:json {
@@ -17,6 +21,6 @@ body:json {
 }
 
 body:form-urlencoded {
-  name: durian
+  name: lychee
   isReadyToEat: on
 }

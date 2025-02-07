@@ -3,6 +3,7 @@ require("dotenv").config(); //? https://github.com/motdotla/dotenv
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const methodOverride = require("method-override");
 
 //* config
 const log = require("debug")("fruits:server");
@@ -18,6 +19,7 @@ mongoose.connection.on("connected", () => {
 const Fruit = require("./models/Fruit");
 
 //* middleware
+app.use(methodOverride("_method"));
 app.use(morgan("dev"));
 //* following line is for EJS only -> interpret the body of the POST
 app.use(express.urlencoded({ extended: false }));
@@ -63,6 +65,19 @@ app.delete("/fruits/:fruitId", async (req, res) => {
   await Fruit.findByIdAndDelete(fruitId);
 
   res.redirect("/fruits");
+});
+
+app.put("/fruits/:fruitId", async (req, res) => {
+  const { fruitId } = req.params;
+
+  if (req.body.isReadyToEat === "on") {
+    req.body.isReadyToEat = true;
+  } else {
+    req.body.isReadyToEat = false;
+  }
+
+  const fruit = await Fruit.findByIdAndUpdate(fruitId, req.body, { new: true });
+  res.send(fruit);
 });
 
 //* listen
