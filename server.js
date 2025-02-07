@@ -12,11 +12,11 @@ const port = 3000;
 mongoose.connect(process.env.MONGODB_URI);
 mongoose.set("debug", true);
 mongoose.connection.on("connected", () => {
-  //? log connection status to terminal on start
   log(`Connected to MongoDB ${mongoose.connection.name}.`);
 });
 
 const Fruit = require("./models/Fruit");
+const fruitsController = require("./controllers/fruitsController");
 
 //* middleware
 app.use(methodOverride("_method"));
@@ -35,50 +35,16 @@ app.get("/fruits/new", (req, res) => {
   res.render("fruits/new.ejs");
 });
 
-app.post("/fruits", async (req, res) => {
-  if (req.body.isReadyToEat === "on") {
-    req.body.isReadyToEat = true;
-  } else {
-    req.body.isReadyToEat = false;
-  }
-  log("body %o", req.body);
-  await Fruit.create(req.body);
-  res.redirect("fruits");
-});
+//? After transferring the async function, remember to call controller function
+app.post("/fruits", fruitsController.create);
 
-app.get("/fruits", async (req, res) => {
-  //? Mongoose code to read all the fruits?
-  const fruits = await Fruit.find({});
+app.get("/fruits", fruitsController.index);
 
-  res.render("fruits/index.ejs", { fruits });
-});
+app.get("/fruits/:fruitId", fruitsController.show);
 
-app.get("/fruits/:fruitId", async (req, res) => {
-  const { fruitId } = req.params;
-  const fruit = await Fruit.findById(fruitId);
-  res.render("fruits/show.ejs", { fruit });
-});
+app.delete("/fruits/:fruitId", fruitsController.del);
 
-app.delete("/fruits/:fruitId", async (req, res) => {
-  const { fruitId } = req.params;
-
-  await Fruit.findByIdAndDelete(fruitId);
-
-  res.redirect("/fruits");
-});
-
-app.put("/fruits/:fruitId", async (req, res) => {
-  const { fruitId } = req.params;
-
-  if (req.body.isReadyToEat === "on") {
-    req.body.isReadyToEat = true;
-  } else {
-    req.body.isReadyToEat = false;
-  }
-
-  const fruit = await Fruit.findByIdAndUpdate(fruitId, req.body, { new: true });
-  res.send(fruit);
-});
+app.put("/fruits/:fruitId", fruitsController.update);
 
 //* listen
 app.listen(port, () => {
